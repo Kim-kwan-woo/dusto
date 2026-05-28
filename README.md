@@ -186,9 +186,101 @@ npm run dist
 
 ## Local Runtime Notes
 
-Dusto is designed to work with local runtimes for assistant, transcription, and summarization features when those runtimes are available on the user's machine.
+Dusto is designed to work with local runtimes for assistant, transcription, and summarization features when those runtimes are available on the user's machine. These runtimes are optional for basic app use, but they are required for the local AI and meeting intelligence features.
 
 The app should always present clear fallback states if local AI, STT, or required helper binaries are missing. Core non-AI modules such as Todo, Notes, Canvas, and HTML editing should remain understandable and directly accessible.
+
+### Assistant And Meeting Summaries With Ollama
+
+Dusto uses Ollama as the current local AI runtime. The Electron main process checks Ollama at `http://127.0.0.1:11434` and looks for an installed local model.
+
+Recommended setup:
+
+1. Install Ollama for macOS from the [official Ollama macOS guide](https://docs.ollama.com/macos).
+2. Make sure the `ollama` CLI is available at one of the expected macOS paths, such as `/opt/homebrew/bin/ollama` or `/usr/local/bin/ollama`.
+3. Start Ollama.
+4. Pull the default Dusto model:
+
+```bash
+ollama pull qwen3:4b
+```
+
+5. Open Dusto and choose the installed model from the assistant runtime status card if needed.
+
+Useful checks:
+
+```bash
+ollama list
+ollama serve
+```
+
+`qwen3:4b` is the current default target because it keeps local chat and tool routing fast on typical Apple Silicon Macs. Users with stronger hardware can install and select a larger local instruct model, but Dusto should not require a large model to be useful.
+
+### Meeting Transcription With whisper.cpp
+
+Meeting transcription is handled locally with `whisper.cpp`. Dusto checks for three things:
+
+- A whisper runtime binary
+- A GGML whisper model file
+- `ffmpeg` for converting recorded audio before transcription
+
+Expected whisper binary paths include:
+
+- `/opt/homebrew/bin/whisper-cli`
+- `/usr/local/bin/whisper-cli`
+- `/opt/homebrew/bin/whisper-cpp`
+- `/usr/local/bin/whisper-cpp`
+
+Expected `ffmpeg` paths include:
+
+- `/opt/homebrew/bin/ffmpeg`
+- `/usr/local/bin/ffmpeg`
+- `/usr/bin/ffmpeg`
+
+Example Homebrew setup:
+
+```bash
+brew install whisper-cpp ffmpeg
+```
+
+Dusto also needs a whisper GGML model file. The [Homebrew `whisper-cpp` formula](https://formulae.brew.sh/formula/whisper-cpp) notes that `whisper-cpp` requires GGML model files, and the upstream [`whisper.cpp` project](https://github.com/ggml-org/whisper.cpp) publishes compatible model downloads.
+
+The app checks common locations, including:
+
+- `~/.local/share/whisper.cpp/models/ggml-base.bin`
+- `~/.local/share/whisper.cpp/models/ggml-base.en.bin`
+- `~/models/whisper.cpp/ggml-base.bin`
+- `~/models/whisper.cpp/ggml-base.en.bin`
+- `/opt/homebrew/share/whisper-cpp/models/ggml-base.bin`
+- `/opt/homebrew/share/whisper-cpp/models/ggml-base.en.bin`
+
+Example model setup:
+
+```bash
+mkdir -p ~/.local/share/whisper.cpp/models
+curl -L \
+  https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.en.bin \
+  -o ~/.local/share/whisper.cpp/models/ggml-base.en.bin
+```
+
+For Korean or multilingual meetings, use `ggml-base.bin` or another multilingual whisper model instead of the English-only `ggml-base.en.bin`.
+
+Advanced users can override auto-detection with environment variables before launching Dusto:
+
+```bash
+export DUSTO_WHISPER_BINARY=/path/to/whisper-cli
+export DUSTO_WHISPER_MODEL=/path/to/ggml-base.bin
+export DUSTO_FFMPEG_BINARY=/path/to/ffmpeg
+```
+
+### Feature Availability Summary
+
+| Feature | Runtime Needed |
+| --- | --- |
+| Todo, Notes, Canvas, HTML editor | No external runtime |
+| Assistant chat and tool routing | Ollama running with a selected local model |
+| Meeting summaries | Ollama running with a selected local model and an existing transcript |
+| Meeting transcription | whisper.cpp binary, GGML whisper model, and `ffmpeg` |
 
 ## Packaging Notes
 
