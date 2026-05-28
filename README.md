@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="./build/dusto-icon.png" alt="Dusto app icon" width="128" />
+</p>
+
 # Dusto
 
 Dusto is a macOS desktop productivity toolbox built with Electron, React, TypeScript, TailwindCSS, and Zustand.
