@@ -59,6 +59,7 @@ Use a structured task entry when:
 - Step 27B — Local Meeting Transcription: added typed meeting transcription IPC, a main-process local `whisper.cpp` STT adapter with `ffmpeg` conversion checks, persisted transcript text/error/status updates, and Meetings UI for starting transcription, showing progress/fallback state, and reading saved transcripts. Validated with `npm run typecheck` and `npm run build`.
 - Step 27C — Local Meeting Summary: added typed meeting summary IPC, local Ollama-backed transcript summarization, structured summary persistence on meeting records, Meetings store summary state/actions, and transcript-adjacent summary UI with runtime/missing-transcript fallbacks. Validated with `npm run typecheck` and `npm run build`.
 - Step 27D — Meeting Record Delete: added typed meeting delete IPC, main-process record removal with best-effort local audio cleanup, Meetings store cache/state cleanup, and confirmed destructive delete UI in meeting detail. Validated with `npm run typecheck` and `npm run build`.
+- Step 28 — Project README Documentation: added a detailed root README covering Dusto's product purpose, current modules, local-first scope, tech stack, project structure, setup commands, packaging notes, repository hygiene, and development principles. Validated against `docs/PRD.md`, `docs/ARCHITECTURE.md`, and available npm scripts.
 
 ## Current
 - No active structured step.
